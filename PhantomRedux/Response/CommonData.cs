@@ -2,7 +2,7 @@
 {
     public class CommonData
     {
-        public StatusCode result { get; set; }
+        public GameStatusCode result { get; set; }
         public string app_ver { get; set; }
         public string prot_ver { get; set; }
         public int maintenance { get; set; } // flag
@@ -14,7 +14,7 @@
         /// </summary>
         public CommonData()
         {
-            result = StatusCode.Success;
+            result = GameStatusCode.Success;
             app_ver = "1.0.0";
             prot_ver = "1";
             maintenance = 0;
@@ -28,7 +28,7 @@
         /// <param name="rc">The result code</param>
         /// <param name="mFlag">The maintenance flag</param>
         /// <param name="coFlag">The "crossover" flag (indicates that the end of day has been passed and that things should refresh?)</param>
-        public CommonData(StatusCode rc, int mFlag, int coFlag)
+        public CommonData(GameStatusCode rc, int mFlag, int coFlag)
         {
             result = rc;
             app_ver = "1.0.0";

@@ -1,6 +1,6 @@
 ﻿namespace PhantomRedux.Response
 {
-    public enum StatusCode
+    public enum GameStatusCode
     {
         /// <summary>No error has occurred.</summary>
         Success = 0,

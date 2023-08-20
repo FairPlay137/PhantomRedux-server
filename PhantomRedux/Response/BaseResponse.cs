@@ -8,5 +8,9 @@
         {
             common = new CommonData();
         }
+        public BaseResponse(GameStatusCode rc, int mFlag, int coFlag)
+        {
+            common = new CommonData(rc, mFlag, coFlag);
+        }
     }
 }
