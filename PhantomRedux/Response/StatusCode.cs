@@ -71,12 +71,15 @@
         Err_RhythmValidId = -9006,
         Err_RhythmValidSta = -9007,
 
+        /// <summary>The server returned an empty response.</summary>
         Err_ResponseEmpty = -9995,
-        /// <summary>The server failed to parse the JSON.</summary>
+        /// <summary>Failed to parse the JSON.</summary>
         Err_JsonAnalysisFailed = -9996,
+        /// <summary>The connection to the server timed out.</summary>
         Err_Timeout = -9997,
         /// <summary>An internal server error has occurred.</summary>
         Err_InternalServerError = -9998,
+        /// <summary>A miscellaneous error has occurred. (likely an internet issue)</summary>
         Err_Other = -9999
     }
 }

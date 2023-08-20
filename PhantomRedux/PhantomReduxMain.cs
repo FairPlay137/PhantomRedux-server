@@ -1,4 +1,4 @@
-﻿using PhantomRedux.Debug;
+﻿using PhantomRedux.DebugHelpers;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
