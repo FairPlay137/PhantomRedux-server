@@ -37,6 +37,8 @@ displayableVersion += " (debug)";
 DebugHelper.ColorfulWrite(new ColorfulString(ConsoleColor.Green, Console.BackgroundColor, $"Phantom Redux - process started at " + DateTime.Now + "\n"));
 DebugHelper.ColorfulWrite(new ColorfulString(ConsoleColor.Red, Console.BackgroundColor, "This software is experimental. Do not use this software in a production environment until development has progressed to a point where it can be deemed safe to do so.\n\n"));
 
+PhantomRedux.Db.Initialize();
+
 app.UseHttpLogging();
 
 //app.UseHttpsRedirection();
@@ -55,7 +57,7 @@ app.MapGet("/robots.txt", async context =>
 
 app.MapGet("/humans.txt", async context =>
 {
-    await context.Response.WriteAsync("Phantom Redux is a replicated server for the iPhone version of Rhythm Thief and the Paris Caper.");
+    await context.Response.WriteAsync("Phantom Redux is a server reimplementation for the iPhone version of Rhythm Thief and the Paris Caper.");
 });
 
 app.MapGet("/generate204", async context =>

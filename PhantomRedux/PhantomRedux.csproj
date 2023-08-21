@@ -15,7 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Db\" />
     <Folder Include="Objects\" />
   </ItemGroup>
 
