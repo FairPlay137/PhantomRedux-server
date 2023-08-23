@@ -22,6 +22,7 @@
                    "{$22} DISCLAIMER: This replacement server is not endorsed by or affiliated with SEGA. It is a fan project that " +
                    "is intended to get this version of the game working again after the End of Service on September 30th 2016.";
             text = "";
+            icon = "";
             sort_order = 999;
         }
     }

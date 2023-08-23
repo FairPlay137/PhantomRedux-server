@@ -189,11 +189,24 @@ namespace PhantomRedux
                         stamina_recover_time INT NOT NULL DEFAULT 0,
                         recovery_unit_time INT NOT NULL DEFAULT 3600,
                         next_recovery_unit_at BIGINT NOT NULL DEFAULT 0,
+                        last_login BIGINT,
                         banned BOOL NOT NULL DEFAULT FALSE,
                         suspended_until BIGINT
                     );
                     ALTER TABLE `pha_players` AUTO_INCREMENT=10000000;
                     """);
+            }
+
+            if (sessions)
+            {
+                QuickRun(conn, """
+                   DROP TABLE IF EXISTS `pha_sessions`;
+                   CREATE TABLE `pha_sessions` (
+                       sid VARCHAR(16) NOT NULL PRIMARY KEY,
+                       uid BIGINT UNSIGNED NOT NULL,
+                       expiry BIGINT NOT NULL
+                   );
+                   """);
             }
         }
 

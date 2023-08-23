@@ -6,10 +6,10 @@ using PhantomRedux.Response;
 namespace PhantomRedux.Controllers
 {
     [ApiController]
-    [Route("Dashboard")]
+    [Route("api/dashboard")]
     public class DashboardController
     {
-        [HttpGet]
+        [HttpPost]
         [Route("resetDatabase")]
         public IActionResult ResetDatabase(string privilegedRoutePassword,
             bool config = false,

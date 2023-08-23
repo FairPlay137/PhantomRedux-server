@@ -16,6 +16,11 @@
                 session_id = "DUMMY"
             };
         }
+
+        public RegisterResponse(RegisterResponseData data)
+        {
+            result = data;
+        }
     }
 
     public class RegisterResponseData
@@ -23,7 +28,7 @@
         public string login_id { get; set; }
 
         /// <summary>The numeric user ID associated with the account</summary>
-        public int user_id { get; set; }
+        public long user_id { get; set; }
 
         /// <summary>The alias the player set during registration</summary>
         public string nick_name { get; set; }
