@@ -21,15 +21,15 @@ namespace PhantomRedux.DebugHelpers
         {
             var stackTrace = new StackTrace();
             switch (type) {
-                case (1):
+                case 1:
                     ColorfulWrite(new ColorfulString(ConsoleColor.Blue, ConsoleColor.Black, "game [" + stackTrace.GetFrame(1).GetMethod().Name + "]"));
                     Console.Write(": " + text + "\n");
                     break;
-                case (2):
+                case 2:
                     ColorfulWrite(new ColorfulString(ConsoleColor.Yellow, ConsoleColor.Black, "warn [" + stackTrace.GetFrame(1).GetMethod().Name + "]"));
                     Console.Write(": " + text + "\n");
                     break;
-                case (3):
+                case 3:
                     ColorfulWrite(new ColorfulString(ConsoleColor.White, ConsoleColor.DarkRed, "bug [" + stackTrace.GetFrame(1).GetMethod().Name + "]"));
                     Console.Write(": " + text + "\n");
                     break;

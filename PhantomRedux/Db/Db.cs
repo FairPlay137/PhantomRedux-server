@@ -5,6 +5,12 @@ using System.Text;
 
 namespace PhantomRedux
 {
+    public class DbConfigStructure
+    {
+        public string ConnectionString { get; set; }
+        public string PrivilegedEndpointPassword { get; set; }
+    }
+
     public class Db
     {
         private static IDataProtector m_protector;
@@ -24,7 +30,7 @@ namespace PhantomRedux
             m_protector = provider.CreateProtector("phantom.db");
 
             // Decrypt string
-            string protectedPayload = null;
+            string? protectedPayload = null;
             try
             {
                 // Read encrypted string from disk
@@ -94,9 +100,9 @@ namespace PhantomRedux
         {
             for (var i = 0; i < arg.Length; i++)
             {
-                if (arg[i] is string)
+                if (arg[i] is string v)
                 {
-                    arg[i] = EscapeString((string)arg[i]);
+                    arg[i] = EscapeString(v);
                 }
             }
             return string.Format(format, arg);
@@ -133,33 +139,61 @@ namespace PhantomRedux
                                          bool episodes = false)
         {
             // THESE SCHEMAS ARE NOT PRODUCTION-READY!
-            using var conn = Db.Get();
+            using var conn = Get();
             conn.Open();
 
             if (config)
             {
-                QuickRun(conn,
-                    @"DROP TABLE IF EXISTS `pha_config`;
-                    CREATE TABLE `pha_config` (
-                        id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                        is_maintenance TINYINT NOT NULL DEFAULT 0,
-                        debug_log TINYINT NOT NULL DEFAULT 0,
-                        session_time INT NOT NULL DEFAULT 3600,
-                    );
-                    INSERT INTO `sw_config` (id) VALUES ('1');");
+                QuickRun(conn,"""
+                      DROP TABLE IF EXISTS `pha_config`;
+                      CREATE TABLE `pha_config` (
+                          id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                          is_maintenance TINYINT NOT NULL DEFAULT 0,
+                          debug_log TINYINT NOT NULL DEFAULT 0,
+                          session_time INT NOT NULL DEFAULT 3600
+                      );
+                      INSERT INTO `pha_config` (id) VALUES ('1');
+                      """);
             }
 
             if (players)
             {
                 QuickRun(conn,
-                    @"DROP TABLE IF EXISTS `pha_players`;
+                    """
+                    DROP TABLE IF EXISTS `pha_players`;
                     CREATE TABLE `pha_players` (
-                        user_id BIGINT UNSIGNED NOT NULL PRIMARY KEY,
-                        login_id VARCHAR[10] NOT NULL,
-                        nick_name VARCHAR[12] NOT NULL,
-                        avatar_clothing VARCHAR[32],
-                        avatar_hat VARCHAR[32],
-                    );");
+                        user_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                        login_id VARCHAR(10) NOT NULL,
+                        nick_name VARCHAR(32) NOT NULL,
+                        avatar_hat VARCHAR(32),
+                        avatar_clothing VARCHAR(32),
+                        avatar_face VARCHAR(32),
+                        avatar_ot VARCHAR(32),
+                        wallpaper VARCHAR(32),
+                        owned_avatars JSON,
+                        owned_wallpapers JSON,
+                        medals INT NOT NULL DEFAULT 1000,
+                        dark_medals INT NOT NULL DEFAULT 0,
+                        rcoins INT NOT NULL DEFAULT 0,
+                        hearts INT NOT NULL DEFAULT 20,
+                        rank INT NOT NULL DEFAULT 0,
+                        total_exp INT NOT NULL DEFAULT 0,
+                        current_exp INT NOT NULL DEFAULT 0,
+                        next_exp INT NOT NULL DEFAULT 100,
+                        max_hitpoint INT NOT NULL DEFAULT 500,
+                        max_stamina INT NOT NULL DEFAULT 20,
+                        max_item_num INT NOT NULL DEFAULT 40,
+                        max_supporter_num INT NOT NULL DEFAULT 50,
+                        max_friend_num INT NOT NULL DEFAULT 30,
+                        max_cost INT NOT NULL DEFAULT 35,
+                        stamina_recover_time INT NOT NULL DEFAULT 0,
+                        recovery_unit_time INT NOT NULL DEFAULT 3600,
+                        next_recovery_unit_at BIGINT NOT NULL DEFAULT 0,
+                        banned BOOL NOT NULL DEFAULT FALSE,
+                        suspended_until BIGINT
+                    );
+                    ALTER TABLE `pha_players` AUTO_INCREMENT=10000000;
+                    """);
             }
         }
 

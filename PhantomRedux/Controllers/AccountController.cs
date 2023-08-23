@@ -15,7 +15,7 @@ namespace PhantomRedux.Controllers
         [Produces("text/json")]
         public JsonResult RegisterAccount([FromForm] string post)
         {
-            RegisterRequest? requestData = JsonSerializer.Deserialize<RegisterRequest>(post);
+            var requestData = JsonSerializer.Deserialize<RegisterRequest>(post);
             if (requestData == null)
             {
                 return new JsonResult(new BaseResponse(GameStatusCode.Err_JsonAnalysisFailed, 0, 0));

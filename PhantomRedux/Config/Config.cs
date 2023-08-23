@@ -17,19 +17,17 @@ namespace PhantomRedux
             m_configCache[key] = newValue;
 
             // Save in database
-            using (var conn = Db.Get())
-            {
-                conn.Open();
+            using var conn = Db.Get();
+            conn.Open();
 
-                var sql = Db.GetCommand("UPDATE `pha_config` SET {0} = '{1}' WHERE id = '{2}';",
-                                        key, newValue.ToString(), m_currentConfig);
+            var sql = Db.GetCommand("UPDATE `pha_config` SET {0} = '{1}' WHERE id = '{2}';",
+                                    key, newValue.ToString(), m_currentConfig);
 
-                var command = new MySqlCommand(sql, conn);
+            var command = new MySqlCommand(sql, conn);
 
-                command.ExecuteNonQuery();
+            command.ExecuteNonQuery();
 
-                conn.Close();
-            }
+            conn.Close();
         }
 
         public static void RefreshConfig()
@@ -43,49 +41,47 @@ namespace PhantomRedux
 
             m_configCache.Clear();
 
-            using (var conn = Db.Get())
+            using var conn = Db.Get();
+            conn.Open();
+
+            try
             {
-                conn.Open();
+                var sql = Db.GetCommand("SELECT * FROM `pha_config` WHERE id = '{0}';", m_currentConfig);
 
-                try
+                var command = new MySqlCommand(sql, conn);
+
+                var reader = command.ExecuteReader();
+
+                if (reader.Read())
                 {
-                    var sql = Db.GetCommand("SELECT * FROM `pha_config` WHERE id = '{0}';", m_currentConfig);
-
-                    var command = new MySqlCommand(sql, conn);
-
-                    var reader = command.ExecuteReader();
-
-                    if (reader.Read())
+                    for (var i = 0; i < reader.FieldCount; i++)
                     {
-                        for (var i = 0; i < reader.FieldCount; i++)
-                        {
-                            m_configCache[reader.GetName(i)] = reader[i];
-                        }
+                        m_configCache[reader.GetName(i)] = reader[i];
                     }
                 }
-                catch (MySqlException)
-                {
-                    // most likely the config table doesn't exist - attempt to initialize it
-                    DebugHelper.ColorfulWrite(new ColorfulString(ConsoleColor.Yellow, Console.BackgroundColor, "Failed to fetch config! Creating config database table if it doesn't exist yet...\n"));
-                    Db.ResetDatabase(true);
-                    DebugHelper.ColorfulWrite(new ColorfulString(ConsoleColor.Yellow, Console.BackgroundColor, "Okay, created. Trying again...\n\n"));
-                    var sql = Db.GetCommand("SELECT * FROM `pha_config` WHERE id = '{0}';", m_currentConfig);
-
-                    var command = new MySqlCommand(sql, conn);
-
-                    var reader = command.ExecuteReader();
-
-                    if (reader.Read())
-                    {
-                        for (var i = 0; i < reader.FieldCount; i++)
-                        {
-                            m_configCache[reader.GetName(i)] = reader[i];
-                        }
-                    }
-                }
-
-                conn.Close();
             }
+            catch (MySqlException)
+            {
+                // most likely the config table doesn't exist - attempt to initialize it
+                DebugHelper.ColorfulWrite(new ColorfulString(ConsoleColor.Yellow, Console.BackgroundColor, "Failed to fetch config! Creating config database table if it doesn't exist yet...\n"));
+                Db.ResetDatabase(true);
+                DebugHelper.ColorfulWrite(new ColorfulString(ConsoleColor.Yellow, Console.BackgroundColor, "Okay, created. Trying again...\n\n"));
+                var sql = Db.GetCommand("SELECT * FROM `pha_config` WHERE id = '{0}';", m_currentConfig);
+
+                var command = new MySqlCommand(sql, conn);
+
+                var reader = command.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    for (var i = 0; i < reader.FieldCount; i++)
+                    {
+                        m_configCache[reader.GetName(i)] = reader[i];
+                    }
+                }
+            }
+
+            conn.Close();
 
         }
 

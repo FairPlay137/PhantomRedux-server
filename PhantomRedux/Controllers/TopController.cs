@@ -18,7 +18,7 @@ namespace PhantomRedux.Controllers
         [Produces("text/json")]
         public JsonResult Status([FromForm] string post)
         {
-            CommonRequest? requestData = JsonSerializer.Deserialize<CommonRequest>(post);
+            var requestData = JsonSerializer.Deserialize<CommonRequest>(post);
             if (requestData == null) {
                 return new JsonResult(new BaseResponse(GameStatusCode.Err_JsonAnalysisFailed, 0, 0));
             }
@@ -28,7 +28,7 @@ namespace PhantomRedux.Controllers
             DebugHelper.Log($"Lang: {requestData.common.lang}", 1);
             DebugHelper.Log($"Platform: {requestData.common.platform}", 1);
 
-            return new JsonResult(new BaseResponse());
+            return new JsonResult(new BaseResponse(GameStatusCode.Success, 0, 1)); // assumed that crossover is always true for this action
         }
     }
 }
