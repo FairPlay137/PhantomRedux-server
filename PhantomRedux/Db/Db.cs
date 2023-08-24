@@ -177,6 +177,7 @@ namespace PhantomRedux
                         rcoins INT NOT NULL DEFAULT 0,
                         hearts INT NOT NULL DEFAULT 20,
                         rank INT NOT NULL DEFAULT 0,
+                        stamina INT NOT NULL DEFAULT 20,
                         total_exp INT NOT NULL DEFAULT 0,
                         current_exp INT NOT NULL DEFAULT 0,
                         next_exp INT NOT NULL DEFAULT 100,

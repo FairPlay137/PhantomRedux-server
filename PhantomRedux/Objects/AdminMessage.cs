@@ -1,5 +1,6 @@
 ﻿namespace PhantomRedux.Objects
 {
+#pragma warning disable IDE1006 // Naming Styles
     public class AdminMessage
     {
         public string event_id { get; set; }
@@ -26,4 +27,5 @@
             sort_order = 999;
         }
     }
+#pragma warning restore IDE1006 // Naming Styles
 }

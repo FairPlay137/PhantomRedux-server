@@ -1,5 +1,6 @@
 ﻿namespace PhantomRedux.Response
 {
+#pragma warning disable IDE1006 // Naming Styles
     public class CommonData
     {
         public GameStatusCode result { get; set; }
@@ -38,4 +39,5 @@
             crossover = coFlag;
         }
     }
+#pragma warning restore IDE1006 // Naming Styles
 }

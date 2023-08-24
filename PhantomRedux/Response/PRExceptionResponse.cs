@@ -1,5 +1,6 @@
 ﻿namespace PhantomRedux.Response
 {
+#pragma warning disable IDE1006 // Naming Styles
     public class PRExceptionResponse : BaseResponse
     {
         public PRExceptionResponseData exception { get; set; }
@@ -20,4 +21,5 @@
         public string exception_type { get; set; }
         public string exception_message { get; set; }
     }
+#pragma warning restore IDE1006 // Naming Styles
 }

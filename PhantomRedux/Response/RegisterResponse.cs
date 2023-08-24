@@ -1,5 +1,6 @@
 ﻿namespace PhantomRedux.Response
 {
+#pragma warning disable IDE1006 // Naming Styles
     public class RegisterResponse : BaseResponse
     {
         public RegisterResponseData result { get; set; }
@@ -41,4 +42,5 @@
         /// <summary>The assigned session ID for the account</summary>
         public string session_id { get; set; }
     }
+#pragma warning restore IDE1006 // Naming Styles
 }

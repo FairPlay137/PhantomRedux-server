@@ -38,9 +38,6 @@ namespace PhantomRedux.Controllers
 
             var sid = "pha_" + GenerateRandomPassword(12);
 
-            string pass = GenerateRandomPassword(32);
-            string keypass = GenerateRandomPassword(32);
-
             sql = Db.GetCommand(
                 @"INSERT INTO `pha_players` (
                         login_id,

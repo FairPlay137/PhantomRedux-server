@@ -1,5 +1,6 @@
 ﻿namespace PhantomRedux.Response
 {
+#pragma warning disable IDE1006 // Naming Styles
     public class MaintenanceResponse : BaseResponse
     {
         public MaintenanceResponseData maintenance { get; set; }
@@ -20,4 +21,5 @@
         public string maintenance_title { get; set; }
         public string maintenance_msg { get; set; }
     }
+#pragma warning restore IDE1006 // Naming Styles
 }
