@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System;
 using PhantomRedux.Objects;
+using System.Text.RegularExpressions;
 
 namespace PhantomRedux.Controllers
 {
@@ -23,15 +24,11 @@ namespace PhantomRedux.Controllers
         [Produces("text/json")]
         public JsonResult Status([FromForm] string post)
         {
-            var requestData = JsonSerializer.Deserialize<CommonRequest>(post);
-            if (requestData == null) {
-                return new JsonResult(new BaseResponse(GameStatusCode.Err_JsonAnalysisFailed, 0, 0));
-            }
+            using var conn = Db.Get();
 
-            DebugHelper.Log($"User ID: {requestData.common.user_id}", 1);
-            DebugHelper.Log($"Session ID: {requestData.common.session_id}", 1);
-            DebugHelper.Log($"Lang: {requestData.common.lang}", 1);
-            DebugHelper.Log($"Platform: {requestData.common.platform}", 1);
+            conn.Open();
+
+            var clientReq = new ClientRequest<CommonRequest>(conn, post, true);
 
             return new JsonResult(new BaseResponse(GameStatusCode.Success, 0, 1)); // assumed that crossover is always true for this action
         }
@@ -45,21 +42,10 @@ namespace PhantomRedux.Controllers
 
             conn.Open();
 
-            var requestData = JsonSerializer.Deserialize<LoginRequest>(post);
-            if (requestData == null)
-            {
-                return new JsonResult(new BaseResponse(GameStatusCode.Err_JsonAnalysisFailed, 0, 0));
-            }
-
-            DebugHelper.Log($"User ID: {requestData.common.user_id}", 1);
-            DebugHelper.Log($"Lang: {requestData.common.lang}", 1);
-            DebugHelper.Log($"Platform: {requestData.common.platform}", 1);
+            var clientReq = new ClientRequest<LoginRequest>(conn, post, true);
 
             // Retrieve user info matching the provided ID
-            var sql = Db.GetCommand(
-                @"SELECT * FROM `pha_players` WHERE `id` = '{0}';",
-                requestData.common.user_id
-            );
+            var sql = Db.GetCommand(@"SELECT * FROM `pha_players` WHERE `user_id` = '{0}';", clientReq.userId);
 
             // Execute query
             var command = new MySqlCommand(sql, conn);
@@ -69,12 +55,13 @@ namespace PhantomRedux.Controllers
             if (!reader.HasRows)
             {
                 // No user with this ID exists in the database
+                reader.Close();
                 return new JsonResult(new BaseResponse(GameStatusCode.Err_UserDoesntExist, 0, 0));
             }
 
             reader.Read();
-            string nickname = reader.GetString("nick_name");
-            bool banned = reader.GetBoolean("banned");
+            var banned = reader.GetBoolean("banned");
+            var suspendedUntil = reader.GetInt64("suspended_until");
             reader.Close();
 
             if (banned)
@@ -83,9 +70,15 @@ namespace PhantomRedux.Controllers
                 return new JsonResult(new BaseResponse(GameStatusCode.Err_UserDeleted, 0, 0));
             }
 
-            var sid = "pha_" + GenerateRandomPassword(12);
-
             var loginTime = DateTimeOffset.Now.ToUnixTimeSeconds();
+
+            if (suspendedUntil > loginTime)
+            {
+                // User is temporarily suspended
+                return new JsonResult(new BaseResponse(GameStatusCode.Err_UserSuspended, 0, 0));
+            }
+
+            var sid = "pha_" + GenerateRandomPassword(12);
 
             var expiryTime = loginTime + Convert.ToInt64(Config.Get("session_time"));
 
@@ -99,23 +92,23 @@ namespace PhantomRedux.Controllers
                                 ) VALUES ('{0}', '{1}', '{2}');
                 """,
                 sid,
-                requestData.common.user_id,
+                clientReq.request.common.user_id,
                 expiryTime
             );
 
-            string removeStaleSessionsSql = Db.GetCommand(
+            var removeStaleSessionsSql = Db.GetCommand(
                 @"DELETE FROM `pha_sessions` WHERE expiry < '{0}';",
                 loginTime
             );
 
             // Generate SQL to update player's last login info
-            string updatePlayerSql = Db.GetCommand(
+            var updatePlayerSql = Db.GetCommand(
                 @"UPDATE `pha_players`
                 SET
-                    last_login = '{0}',
-                WHERE `id` = '{1}'",
+                    last_login = '{0}'
+                WHERE `user_id` = '{1}';",
             loginTime,
-                requestData.common.user_id
+                clientReq.userId
             );
 
             command = new MySqlCommand(removeStaleSessionsSql + insertSessionSql + updatePlayerSql, conn);
@@ -160,6 +153,24 @@ namespace PhantomRedux.Controllers
                 builder.Append(chars[index]);
             }
             return builder.ToString();
+        }
+
+        [HttpPost]
+        [Route("info")]
+        [Produces("text/json")]
+        public JsonResult Info([FromForm] string post)
+        {
+            using var conn = Db.Get();
+
+            conn.Open();
+
+            var clientReq = new ClientRequest<CommonRequest>(conn, post);
+            if (clientReq.error != GameStatusCode.Success) return new JsonResult(new BaseResponse(clientReq.error, 0, 0));
+
+            var response = new InfoResponse();
+            var result = response.Populate(conn, clientReq.userId);
+
+            return result == GameStatusCode.Success ? new JsonResult(response) : new JsonResult(new BaseResponse(result, 0, 0));
         }
     }
 }

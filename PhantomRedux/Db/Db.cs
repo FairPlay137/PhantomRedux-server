@@ -46,16 +46,16 @@ namespace PhantomRedux
             {
                 if (e.GetType() == typeof(FileNotFoundException) || string.IsNullOrEmpty(protectedPayload))
                 {
-                    Console.WriteLine("No database details were found. Please use /Dashboard/setDatabaseDetails to update them.");
+                    Console.WriteLine("No database details were found. Please use /api/dashboard/setDatabaseDetails to update them.");
                 }
                 else if (e.GetType() == typeof(CryptographicException))
                 {
-                    Console.WriteLine("Failed to decrypt database details. Please use /Dashboard/setDatabaseDetails to update them.");
+                    Console.WriteLine("Failed to decrypt database details. Please use /api/dashboard/setDatabaseDetails to update them.");
                     Console.WriteLine(e);
                 }
                 else if (e.GetType() == typeof(MySqlException))
                 {
-                    Console.WriteLine("Failed to connect to MySQL with stored details. Please use /Dashboard/setDatabaseDetails to update them.");
+                    Console.WriteLine("Failed to connect to MySQL with stored details. Please use /api/dashboard/setDatabaseDetails to update them.");
                     Console.WriteLine(e);
                 }
             }
@@ -136,7 +136,9 @@ namespace PhantomRedux
         public static void ResetDatabase(bool config = false,
                                          bool players = false,
                                          bool sessions = false,
-                                         bool episodes = false)
+                                         bool rhythmgames = false,
+                                         bool episodes = false,
+                                         bool supporters = false)
         {
             // THESE SCHEMAS ARE NOT PRODUCTION-READY!
             using var conn = Get();
@@ -165,20 +167,20 @@ namespace PhantomRedux
                         user_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
                         login_id VARCHAR(10) NOT NULL,
                         nick_name VARCHAR(32) NOT NULL,
-                        avatar_hat VARCHAR(32),
-                        avatar_clothing VARCHAR(32),
-                        avatar_face VARCHAR(32),
-                        avatar_ot VARCHAR(32),
-                        wallpaper VARCHAR(32),
+                        avatar_hat VARCHAR(32) DEFAULT 'AV200000',
+                        avatar_face VARCHAR(32) DEFAULT 'AV300000',
+                        avatar_clothing VARCHAR(32) DEFAULT 'AV100100',
+                        avatar_ot VARCHAR(32) DEFAULT '',
+                        wallpaper VARCHAR(32) DEFAULT 'WP000',
                         owned_avatars JSON,
                         owned_wallpapers JSON,
                         medals INT NOT NULL DEFAULT 1000,
                         dark_medals INT NOT NULL DEFAULT 0,
                         rcoins INT NOT NULL DEFAULT 0,
-                        hearts INT NOT NULL DEFAULT 20,
+                        hearts INT NOT NULL DEFAULT 400,
                         rank INT NOT NULL DEFAULT 0,
                         stamina INT NOT NULL DEFAULT 20,
-                        total_exp INT NOT NULL DEFAULT 0,
+                        total_exp BIGINT NOT NULL DEFAULT 0,
                         current_exp INT NOT NULL DEFAULT 0,
                         next_exp INT NOT NULL DEFAULT 100,
                         max_hitpoint INT NOT NULL DEFAULT 500,
@@ -187,12 +189,14 @@ namespace PhantomRedux
                         max_supporter_num INT NOT NULL DEFAULT 50,
                         max_friend_num INT NOT NULL DEFAULT 30,
                         max_cost INT NOT NULL DEFAULT 35,
+                        item_available INT NOT NULL DEFAULT 6,
+                        supporter_available INT NOT NULL DEFAULT 6,
                         stamina_recover_time INT NOT NULL DEFAULT 0,
-                        recovery_unit_time INT NOT NULL DEFAULT 3600,
+                        recovery_unit_time INT NOT NULL DEFAULT 600,
                         next_recovery_unit_at BIGINT NOT NULL DEFAULT 0,
-                        last_login BIGINT,
+                        last_login BIGINT NOT NULL DEFAULT 0,
                         banned BOOL NOT NULL DEFAULT FALSE,
-                        suspended_until BIGINT
+                        suspended_until BIGINT NOT NULL DEFAULT 0
                     );
                     ALTER TABLE `pha_players` AUTO_INCREMENT=10000000;
                     """);

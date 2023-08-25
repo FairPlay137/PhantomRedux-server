@@ -23,15 +23,12 @@ namespace PhantomRedux.Controllers
 
             conn.Open();
 
-            var requestData = JsonSerializer.Deserialize<RegisterRequest>(post);
-            if (requestData == null)
-            {
-                return new JsonResult(new BaseResponse(GameStatusCode.Err_JsonAnalysisFailed, 0, 0));
-            }
+            var clientReq = new ClientRequest<RegisterRequest>(conn, post, true);
+
             string sql;
             MySqlCommand command;
 
-            DebugHelper.Log($"Registering new user with the \"{requestData.account.nick_name}\" nickname...", 1);
+            DebugHelper.Log($"Registering new user with the \"{clientReq.request.account.nick_name}\" nickname...", 1);
 
             var loginId = GenerateRandomPassword(10);
             var loginTime = DateTimeOffset.Now.ToUnixTimeSeconds();
@@ -47,7 +44,7 @@ namespace PhantomRedux.Controllers
                     VALUES ('{0}','{1}','{2}');
                     SELECT LAST_INSERT_ID();",
                 loginId,
-                requestData.account.nick_name,
+                clientReq.request.account.nick_name,
                 loginTime
             );
 
@@ -84,7 +81,7 @@ namespace PhantomRedux.Controllers
             {
                 user_id = long.Parse(uid),
                 login_id = loginId,
-                nick_name = requestData.account.nick_name,
+                nick_name = clientReq.request.account.nick_name,
                 session_id = sid,
                 avator_cloth = "",
                 avator_hat = "",

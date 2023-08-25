@@ -15,7 +15,9 @@ namespace PhantomRedux.Controllers
             bool config = false,
             bool players = false,
             bool sessions = false,
-            bool episodes = false)
+            bool rhythmgames = false,
+            bool episodes = false,
+            bool supporters = false)
         {
             if (privilegedRoutePassword != "TemporaryPassword") // TODO: This should be configurable!
             {
@@ -24,7 +26,7 @@ namespace PhantomRedux.Controllers
 
             try
             {
-                Db.ResetDatabase(config, players, sessions, episodes);
+                Db.ResetDatabase(config, players, sessions, rhythmgames, episodes, supporters);
                 return new JsonResult(new BaseResponse(GameStatusCode.Success, 0, 0));
             }
             catch (MySqlException e)
