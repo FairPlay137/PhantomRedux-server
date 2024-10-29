@@ -1,0 +1,15 @@
+{
+  "profiles": {
+    "Fondue - Development": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://localhost:80"
+    },
+    "Fondue - Production": {
+      "commandName": "Project",
+      "applicationUrl": "http://localhost:80"
+    }
+  }
+}

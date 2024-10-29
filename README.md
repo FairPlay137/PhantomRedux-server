@@ -1,8 +1,8 @@
-# Phantom Redux
+# Fondue
 
 An open-source replacement server for the defunct SEGA iOS game Rhythm Thief and the Paris Caper.
 
-Although there were some efforts to revive the game after the official service closure back in September 2015, none of those efforts have gotten very far.  Phantom Redux aims to replicate most of the original server's functionality.
+Although there were some efforts to revive the game after the official service closure back in September 2015, none of those efforts have gotten very far.  Fondue aims to replicate most of the original server's functionality.
 
 # Working features
 * Basic server check
